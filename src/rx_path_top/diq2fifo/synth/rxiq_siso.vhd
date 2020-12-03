@@ -14,7 +14,7 @@ use ieee.numeric_std.all;
 -- ----------------------------------------------------------------------------
 entity rxiq_siso is
    generic(
-      iq_width					: integer := 12
+      iq_width					: integer := 12 --vk
    );
   port (
       clk         : in std_logic;
@@ -93,7 +93,7 @@ end process;
 -- ----------------------------------------------------------------------------
  rxiq_siso_sdr_inst0 : entity work.rxiq_siso_sdr
    generic map (
-      iq_width    => 12
+      iq_width    => iq_width --12 --vk
    )
    port map (
       clk         => clk,
@@ -111,7 +111,7 @@ end process;
 -- ---------------------------------------------------------------------------- 
   rxiq_siso_ddr_inst1 : entity work.rxiq_siso_ddr
    generic map (
-      iq_width    => 12
+      iq_width    => iq_width  --12 --vk 
    )
    port map (
       clk         => clk,

@@ -15,7 +15,7 @@ use ieee.numeric_std.all;
 entity diq2fifo is
    generic( 
       dev_family           : string := "Cyclone IV E";
-      iq_width             : integer := 12;
+      iq_width             : integer := 12; --vk
       invert_input_clocks  : string := "ON"
       );
    port (
@@ -68,6 +68,10 @@ signal mux0_diq_h_reg   : std_logic_vector (iq_width downto 0);
 signal mux0_diq_l_reg   : std_logic_vector (iq_width downto 0);
 
 signal smpl_cnt_en_reg  : std_logic;
+
+signal TestA 				: std_logic_vector (15 downto 0) := x"AAAA"; 
+signal Test5A 				: std_logic_vector (15 downto 0) := x"5555"; 
+
   
 begin
 
@@ -129,8 +133,8 @@ port map(
    reset_n        => reset_n,
    fr_start       => fidm,
    mimo_en        => mimo_en,  
-   data_h         => inst2_data_h,
-   data_l         => inst2_data_l
+   data_h         => inst2_data_h(12 downto 0),
+   data_l         => inst2_data_l(12 downto 0)
 
 );
 
@@ -171,10 +175,10 @@ inst3_smpl_cmp : entity work.smpl_cmp
       --control and status
       cmp_start   => smpl_cmp_start,
       cmp_length  => smpl_cmp_length,
-      cmp_AI      => x"AAA",
-      cmp_AQ      => x"555",
-      cmp_BI      => x"AAA",
-      cmp_BQ      => x"555",
+      cmp_AI      => TestA(iq_width-1 downto 0),-- x"AAA", --VK
+      cmp_AQ      => Test5A(iq_width-1 downto 0), --x"555",
+      cmp_BI      => TestA(iq_width-1  downto 0),--x"AAA",
+      cmp_BQ      => Test5A(iq_width-1 downto 0), --x"555",
       cmp_done    => smpl_cmp_done,
       cmp_error   => smpl_cmp_err,
       --DIQ bus

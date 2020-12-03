@@ -15,7 +15,7 @@ use ieee.numeric_std.all;
 entity rx_path_top is
    generic( 
       dev_family           : string := "Cyclone IV E";
-      iq_width             : integer := 12;
+      iq_width             : integer := 12;  --vk Wert bleibt so 
       invert_input_clocks  : string := "OFF";
       smpl_buff_rdusedw_w  : integer := 11; --bus width in bits 
       pct_buff_wrusedw_w   : integer := 12  --bus width in bits 
@@ -241,10 +241,20 @@ smpl_fifo_inst1 : entity work.fifo_inst
         );
  
 --samples are placed to MSb LSb ar filled with zeros 
-inst2_smpl_buff_rddata <=  inst1_q(47 downto 36) & "0000" & 
-                           inst1_q(35 downto 24) & "0000" & 
-                           inst1_q(23 downto 12) & "0000" & 
-                           inst1_q(11 downto 0) & "0000";
+--inst2_smpl_buff_rddata <=  inst1_q(47 downto 36) & "0000" & 
+--                           inst1_q(35 downto 24) & "0000" & 
+--                           inst1_q(23 downto 12) & "0000" & 
+--                           inst1_q(11 downto 0) & "0000";
+
+--vk
+-- Packages now with Digital IO 
+--Digital-IO in unteren 4 LSBs
+--Vorteil bei 16 Bits und 12Bit dann S/N sind die 4LBS Rauschen ..
+inst2_smpl_buff_rddata <=  inst1_q(63 downto 48) & 
+                           inst1_q(47 downto 32) & 
+                           inst1_q(31 downto 16) & 
+                           inst1_q(15 downto 0) ;
+
     
     
 --packet reserved bits  
@@ -265,7 +275,7 @@ data2packets_top_inst2 : entity work.data2packets_top
    port map(
       clk               => clk,
       reset_n           => reset_n_sync,
-      sample_width      => sample_width_sync,
+      sample_width      => "00", --sample_width_sync, --vk
       pct_hdr_0         => inst2_pct_hdr_0,
       pct_hdr_1         => inst2_pct_hdr_1,
       pct_buff_wrusedw  => pct_fifo_wusedw,

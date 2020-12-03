@@ -15,7 +15,7 @@ use ieee.numeric_std.all;
 entity rxiq is
    generic( 
       dev_family	: string := "Cyclone IV E";
-      iq_width		: integer := 12
+      iq_width		: integer := 12 --16 --vk		
    );
    port (
       clk         : in std_logic;
@@ -93,7 +93,7 @@ end process;
  
  inst0_rxiq_siso : entity work.rxiq_siso
    generic map (
-      iq_width    => 12
+      iq_width    => iq_width --vk 12
    )
    port map (
       clk         => clk,
@@ -109,7 +109,7 @@ end process;
         
  inst1_rxiq_mimo : entity work.rxiq_mimo
    generic map (
-      iq_width    => 12
+      iq_width    => iq_width --vk 12
    )
    port map (
       clk         => clk,

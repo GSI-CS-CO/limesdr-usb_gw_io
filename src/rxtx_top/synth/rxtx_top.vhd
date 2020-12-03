@@ -32,7 +32,7 @@ entity rxtx_top is
       TX_OUT_PCT_DATA_W       : integer := 64;
       
       -- RX parameters
-      RX_IQ_WIDTH             : integer := 12;
+      RX_IQ_WIDTH             : integer := 16; --VK Gesamtpaketlänge ist nun 16 Bits mit 12 MSBs als ADC und 4LSBs als Digital IO
       RX_INVERT_INPUT_CLOCKS  : string := "OFF";
       RX_SMPL_BUFF_RDUSEDW_W  : integer := 11; --bus width in bits 
       RX_PCT_BUFF_WRUSEDW_W   : integer := 12; --bus width in bits 

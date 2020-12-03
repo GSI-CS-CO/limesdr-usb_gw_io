@@ -123,15 +123,18 @@ begin
 -- Blinking indicates presence of TCXO clock.
 -- Colour indicates status of FPGA PLLs that are used for LMS digital interface clocking: 
 -- Green - both PLLs are locked; Red/Green - at least one -- PLL is not locked.
--- ----------------------------------------------------------------------------    
+-- ---------------------------------------------------------------------------- 
+led1_r<=   inst0_beat; --vk Test der IO-Durchleitung mit intern generierten CLK 
+-- erspart externe testkabel
+-- LED der direkten Verbindung von clk muss dann nahezu synchron zur Ausgabe der LED über RX-Verarbeitung sein
    FPGA_LED1_cntrl_inst2 : entity work.FPGA_LED1_cntrl
    port map(
       pll1_locked    => led1_pll1_locked,
       pll2_locked    => led1_pll2_locked,
       alive          => inst0_beat,
       led_ctrl       => led1_ctrl,
-      led_g          => led1_g,
-      led_r          => led1_r
+      led_g          => led1_g
+      --led_r          => led1_r --vk
    );
 -- ----------------------------------------------------------------------------
 -- FPGA_LED2_ctrl instance

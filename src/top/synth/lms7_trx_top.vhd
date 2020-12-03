@@ -275,11 +275,31 @@ signal inst6_wfm_in_pct_rdreq       : std_logic;
 signal inst6_wfm_phy_clk            : std_logic;
 
 
+signal LEDout        : std_logic; --dummy
+signal fpgain        : std_logic_vector(3 downto 0) :="0000"; -- Speichert die zu sendende Digital-IOs 
+
 
 
 begin
-   
--- ----------------------------------------------------------------------------
+
+
+
+--VK
+-- Test über Hardware (muss für Produktion später wieder zurückprogrammiert werden)
+-- Wird GPIO-Bit  durch die FIFO -Ketten durchgereicht?
+-- Steuerung über "Board related Controls" in "Lime Suite GUI"
+--1. Wirkt eien IO überhaupt?
+FPGA_LED1_R <= FPGA_GPIO(0); -- Test/ Kontrolle / direkte Verbindung
+--> Led_1 blinkt dann rot
+
+--2.  Test, ob Eingang (FPGA_GPIO(1)) auch über die FiFO-Kette durchgeschleift wurde
+--Eingänge für rx über USB abholen vorerst nur 2 Bits zu Demozwecken
+fpgain      <= FPGA_GPIO(1 downto 0) & "00";  -- Bit 1 aus GPIO wird bit 3 in 4LBS zugeordnet
+FPGA_LED2_R <= inst6_rx_pct_fifo_wdata(3); --Testausgang / Led 2 wird rot falls bit 3 in Testkanal/DAC-rx-Wert gesetzt ist
+
+
+
+--------------------------------------------------------------
 -- Reset logic
 -- ----------------------------------------------------------------------------  
    -- Reset from FPGA pin. 
@@ -564,7 +584,7 @@ begin
       led1_pll2_locked     => inst1_rxpll_locked,
       led1_ctrl            => inst0_from_fpgacfg.FPGA_LED1_CTRL,
       led1_g               => FPGA_LED1_G,
-      led1_r               => FPGA_LED1_R,      
+      led1_r               => LEDout,      --vk dummy s.o 
       --LED2 (TCXO control status)
       led2_clk             => inst0_spi_1_SCLK,
       led2_adf_muxout      => ADF_MUXOUT,
@@ -572,7 +592,7 @@ begin
       led2_adf_ss          => inst0_spi_1_SS_n(1),
       led2_ctrl            => inst0_from_fpgacfg.FPGA_LED2_CTRL,
       led2_g               => FPGA_LED2_G,
-      led2_r               => FPGA_LED2_R,     
+      --led2_r               => FPGA_LED2_R,   --VK --Led_2 Blinkt rot s.o.  
       --LED3 (FX3 and NIOS CPU busy)
       led3_g_in            => not inst5_busy,
       led3_r_in            => inst5_busy,
@@ -590,6 +610,8 @@ begin
       fan_ctrl_out         => FAN_CTRL
    );
    
+	
+	
    inst5_busy_delay : entity work.busy_delay
    generic map(
       clock_period   => FX3_PCLK_PERIOD,
@@ -621,7 +643,8 @@ begin
       TX_IN_PCT_RDUSEDW_W     => C_EP01_0_RDUSEDW_WIDTH,
       
       -- RX parameters
-      RX_IQ_WIDTH             => LMS_DIQ_WIDTH,
+      --intern werden 16 Bits verarbeitet -- es sind aber nur die Top 12 als Analogwert später relevant
+      RX_IQ_WIDTH             => 16, --LMS_DIQ_WIDTH, --12, --vk
       RX_INVERT_INPUT_CLOCKS  => "ON",
       RX_PCT_BUFF_WRUSEDW_W   => C_EP81_WRUSEDW_WIDTH, --bus width in bits 
       
@@ -686,7 +709,9 @@ begin
       rx_clk                  => inst1_rxpll_c1,
       rx_clk_reset_n          => inst1_rxpll_locked,
       --Rx interface data 
-      rx_DIQ                  => LMS_DIQ2_D,
+             --hier werden die Inputs aus "fpgain" in den Datenstrom eingefügt
+	     
+      rx_DIQ                  => LMS_DIQ2_D & fpgain,--vk  
       rx_fsync                => LMS_DIQ2_IQSEL2,
       --Packet fifo ports
       rx_pct_fifo_aclrn_req   => inst6_rx_pct_fifo_aclrn_req,
